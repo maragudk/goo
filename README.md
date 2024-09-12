@@ -1,5 +1,8 @@
 # goo
 
+[![GoDoc](https://pkg.go.dev/badge/maragu.dev/goo)](https://pkg.go.dev/maragu.dev/goo)
+[![Go](https://github.com/maragudk/gomponents/actions/workflows/ci.yml/badge.svg)](https://github.com/maragudk/gomponents/actions/workflows/ci.yml)
+
 The goo to glue web services together.
 
 ```shell
