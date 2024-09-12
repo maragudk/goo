@@ -5,6 +5,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/maragudk/goqite"
 	qjobs "github.com/maragudk/goqite/jobs"
 	"golang.org/x/sync/errgroup"
@@ -16,24 +17,29 @@ import (
 )
 
 type Options struct {
+	Log     *snorkel.Logger
 	Migrate bool
+	Routes  func(chi.Router)
 }
 
 func Start(opts Options) {
-	log := snorkel.New(snorkel.Options{})
+	log := opts.Log
 
 	if opts.Migrate {
-		if err := migrate(log); err != nil {
+		if err := migrate(opts); err != nil {
 			log.Event("Error migrating", 1, "error", err)
+			return
 		}
 	}
 
-	if err := start(log); err != nil {
+	if err := start(opts); err != nil {
 		log.Event("Error starting", 1, "error", err)
 	}
 }
 
-func start(log *snorkel.Logger) error {
+func start(opts Options) error {
+	log := opts.Log
+
 	log.Event("Starting app", 1)
 
 	_ = env.Load()
@@ -66,6 +72,7 @@ func start(log *snorkel.Logger) error {
 		BaseURL:       env.GetStringOrDefault("BASE_URL", "http://localhost:8080"),
 		DB:            db,
 		Log:           log,
+		Routes:        opts.Routes,
 		SecureCookie:  env.GetBoolOrDefault("SECURE_COOKIE", true),
 	})
 
@@ -96,7 +103,9 @@ func start(log *snorkel.Logger) error {
 	return nil
 }
 
-func migrate(log *snorkel.Logger) error {
+func migrate(opts Options) error {
+	log := opts.Log
+
 	log.Event("Migrating", 1)
 
 	_ = env.Load()
