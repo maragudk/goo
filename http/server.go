@@ -27,6 +27,7 @@ type Server struct {
 }
 
 type NewServerOptions struct {
+	Address            string
 	AdminPassword      string
 	BaseURL            string
 	HTTPRouterInjector func(chi.Router)
@@ -38,6 +39,10 @@ type NewServerOptions struct {
 func NewServer(opts NewServerOptions) *Server {
 	if opts.Log == nil {
 		opts.Log = snorkel.New(snorkel.Options{W: io.Discard})
+	}
+
+	if opts.Address == "" {
+		opts.Address = ":8080"
 	}
 
 	mux := chi.NewMux()
@@ -54,7 +59,7 @@ func NewServer(opts NewServerOptions) *Server {
 		log:                opts.Log,
 		mux:                mux,
 		server: &http.Server{
-			Addr:              ":8080",
+			Addr:              opts.Address,
 			Handler:           mux,
 			ReadTimeout:       5 * time.Second,
 			ReadHeaderTimeout: 5 * time.Second,

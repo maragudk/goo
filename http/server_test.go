@@ -4,6 +4,7 @@ import (
 	"io"
 	http2 "net/http"
 	"testing"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"maragu.dev/is"
@@ -23,6 +24,7 @@ func TestServer_Start(t *testing.T) {
 		}
 
 		s := http.NewServer(http.NewServerOptions{
+			Address:            ":58232",
 			AdminPassword:      "correct horse battery staple",
 			BaseURL:            "http://localhost:8080",
 			HTTPRouterInjector: httpRouterInjector,
@@ -30,10 +32,17 @@ func TestServer_Start(t *testing.T) {
 			SQLHelper:          sqlHelper,
 		})
 
-		go s.Start()
-		defer s.Stop()
+		go func() {
+			is.NotError(t, s.Start())
+		}()
+		defer func() {
+			is.NotError(t, s.Stop())
+		}()
 
-		res, err := http2.Get("http://localhost:8080/")
+		// I know we could check that the server is running here, but it's easier to just wait a bit
+		time.Sleep(10 * time.Millisecond)
+
+		res, err := http2.Get("http://localhost:58232/")
 		is.NotError(t, err)
 		is.Equal(t, http2.StatusOK, res.StatusCode)
 		body, err := io.ReadAll(res.Body)
