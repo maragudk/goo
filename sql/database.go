@@ -3,9 +3,9 @@ package sql
 import (
 	"context"
 	"database/sql"
-	"embed"
 	"io"
 	"io/fs"
+	"os"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -18,9 +18,9 @@ import (
 
 type Database struct {
 	DB        *sqlx.DB
+	jobsQueue *goqite.Queue
 	log       *snorkel.Logger
 	path      string
-	jobsQueue *goqite.Queue
 }
 
 type NewDatabaseOptions struct {
@@ -90,25 +90,26 @@ func rollback(tx *sqlx.Tx, err error) error {
 	return err
 }
 
-//go:embed migrations
-var migrations embed.FS
-
 func (d *Database) MigrateUp(ctx context.Context) error {
-	fsys := d.getMigrations()
-	return migrate.Up(ctx, d.DB.DB, fsys)
+	// TODO some migrations should be in goo
+	return migrate.Up(ctx, d.DB.DB, d.getMigrations())
 }
 
 func (d *Database) MigrateDown(ctx context.Context) error {
-	fsys := d.getMigrations()
-	return migrate.Down(ctx, d.DB.DB, fsys)
+	return migrate.Down(ctx, d.DB.DB, d.getMigrations())
 }
 
 func (d *Database) getMigrations() fs.FS {
-	fsys, err := fs.Sub(migrations, "migrations")
-	if err != nil {
-		panic(err)
+	for _, path := range []string{"sql/migrations", "../sql/migrations"} {
+		migrations := os.DirFS(path)
+
+		matches, err := fs.Glob(migrations, "*.sql")
+		if err == nil && len(matches) > 0 {
+			return migrations
+		}
 	}
-	return fsys
+
+	panic("no migrations found")
 }
 
 func (d *Database) Ping(ctx context.Context) error {
