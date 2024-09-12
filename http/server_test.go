@@ -14,20 +14,20 @@ import (
 
 func TestServer_Start(t *testing.T) {
 	t.Run("can start and stop server", func(t *testing.T) {
-		db := sqltest.CreateDatabase(t)
+		sqlHelper := sqltest.NewHelper(t)
 
-		routes := func(r chi.Router) {
+		httpRouterInjector := func(r chi.Router) {
 			r.Get("/", func(w http2.ResponseWriter, r *http2.Request) {
 				_, _ = w.Write([]byte("OK"))
 			})
 		}
 
 		s := http.NewServer(http.NewServerOptions{
-			AdminPassword: "correct horse battery staple",
-			BaseURL:       "http://localhost:8080",
-			DB:            db,
-			SecureCookie:  false,
-			Routes:        routes,
+			AdminPassword:      "correct horse battery staple",
+			BaseURL:            "http://localhost:8080",
+			HTTPRouterInjector: httpRouterInjector,
+			SecureCookie:       false,
+			SQLHelper:          sqlHelper,
 		})
 
 		go s.Start()

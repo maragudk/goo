@@ -21,8 +21,8 @@ func (s *Server) setupRoutes() {
 			r.Use(s.sm.LoadAndSave)
 			r.Use(httph.NoClickjacking)
 
-			if s.setupUserRoutes != nil {
-				s.setupUserRoutes(r)
+			if s.httpRouterInjector != nil {
+				s.httpRouterInjector(r)
 			}
 		})
 	})

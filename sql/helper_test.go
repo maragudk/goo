@@ -9,9 +9,9 @@ import (
 	"maragu.dev/goo/sqltest"
 )
 
-func TestDatabase_Migrate(t *testing.T) {
+func TestHelper_Migrate(t *testing.T) {
 	t.Run("can migrate down and back up", func(t *testing.T) {
-		db := sqltest.CreateDatabase(t)
+		db := sqltest.NewHelper(t)
 
 		err := db.MigrateDown(context.Background())
 		is.NotError(t, err)

@@ -17,9 +17,10 @@ import (
 )
 
 type Options struct {
-	Log     *snorkel.Logger
-	Migrate bool
-	Routes  func(chi.Router)
+	HTTPRouterInjector func(chi.Router)
+	Log                *snorkel.Logger
+	Migrate            bool
+	SQLHelperInjector  func(*sql.Helper)
 }
 
 func Start(opts Options) {
@@ -47,16 +48,19 @@ func start(opts Options) error {
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT)
 	defer stop()
 
-	db := sql.NewDatabase(sql.NewDatabaseOptions{
+	sqlHelper := sql.NewHelper(sql.NewHelperOptions{
 		Log:  log,
 		Path: env.GetStringOrDefault("DATABASE_PATH", "app.db"),
 	})
-	if err := db.Connect(); err != nil {
+	if err := sqlHelper.Connect(); err != nil {
 		return err
+	}
+	if opts.SQLHelperInjector != nil {
+		opts.SQLHelperInjector(sqlHelper)
 	}
 
 	q := goqite.New(goqite.NewOpts{
-		DB:   db.DB.DB,
+		DB:   sqlHelper.DB.DB,
 		Name: "jobs",
 	})
 
@@ -65,15 +69,15 @@ func start(opts Options) error {
 		Queue: q,
 	})
 
-	db.SetJobsQueue(q)
+	sqlHelper.SetJobsQueue(q)
 
 	s := http.NewServer(http.NewServerOptions{
-		AdminPassword: env.GetStringOrDefault("ADMIN_PASSWORD", "correct horse battery staple"),
-		BaseURL:       env.GetStringOrDefault("BASE_URL", "http://localhost:8080"),
-		DB:            db,
-		Log:           log,
-		Routes:        opts.Routes,
-		SecureCookie:  env.GetBoolOrDefault("SECURE_COOKIE", true),
+		AdminPassword:      env.GetStringOrDefault("ADMIN_PASSWORD", "correct horse battery staple"),
+		BaseURL:            env.GetStringOrDefault("BASE_URL", "http://localhost:8080"),
+		HTTPRouterInjector: opts.HTTPRouterInjector,
+		Log:                log,
+		SecureCookie:       env.GetBoolOrDefault("SECURE_COOKIE", true),
+		SQLHelper:          sqlHelper,
 	})
 
 	eg, ctx := errgroup.WithContext(ctx)
@@ -110,7 +114,7 @@ func migrate(opts Options) error {
 
 	_ = env.Load()
 
-	db := sql.NewDatabase(sql.NewDatabaseOptions{
+	db := sql.NewHelper(sql.NewHelperOptions{
 		Log:  log,
 		Path: env.GetStringOrDefault("DATABASE_PATH", "app.db"),
 	})
@@ -133,4 +137,8 @@ type logAdapter struct {
 
 func (l *logAdapter) Info(msg string, args ...any) {
 	l.log.Event(msg, 1, args...)
+}
+
+func NewLogger() *snorkel.Logger {
+	return snorkel.New(snorkel.Options{})
 }

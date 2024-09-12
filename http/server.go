@@ -17,23 +17,22 @@ import (
 )
 
 type Server struct {
-	adminPassword   string
-	baseURL         string
-	db              *sql.Database
-	log             *snorkel.Logger
-	mux             *chi.Mux
-	server          *http.Server
-	setupUserRoutes func(chi.Router)
-	sm              *scs.SessionManager
+	adminPassword      string
+	baseURL            string
+	log                *snorkel.Logger
+	mux                *chi.Mux
+	server             *http.Server
+	httpRouterInjector func(chi.Router)
+	sm                 *scs.SessionManager
 }
 
 type NewServerOptions struct {
-	AdminPassword string
-	BaseURL       string
-	DB            *sql.Database
-	Log           *snorkel.Logger
-	Routes        func(chi.Router)
-	SecureCookie  bool
+	AdminPassword      string
+	BaseURL            string
+	HTTPRouterInjector func(chi.Router)
+	Log                *snorkel.Logger
+	SecureCookie       bool
+	SQLHelper          *sql.Helper
 }
 
 func NewServer(opts NewServerOptions) *Server {
@@ -44,16 +43,16 @@ func NewServer(opts NewServerOptions) *Server {
 	mux := chi.NewMux()
 
 	sm := scs.New()
-	sm.Store = sqlite3store.New(opts.DB.DB.DB)
+	sm.Store = sqlite3store.New(opts.SQLHelper.DB.DB)
 	sm.Lifetime = 365 * 24 * time.Hour
 	sm.Cookie.Secure = opts.SecureCookie
 
 	return &Server{
-		adminPassword: opts.AdminPassword,
-		baseURL:       strings.TrimSuffix(opts.BaseURL, "/"),
-		db:            opts.DB,
-		log:           opts.Log,
-		mux:           mux,
+		adminPassword:      opts.AdminPassword,
+		baseURL:            strings.TrimSuffix(opts.BaseURL, "/"),
+		httpRouterInjector: opts.HTTPRouterInjector,
+		log:                opts.Log,
+		mux:                mux,
 		server: &http.Server{
 			Addr:              ":8080",
 			Handler:           mux,
@@ -62,13 +61,12 @@ func NewServer(opts NewServerOptions) *Server {
 			WriteTimeout:      5 * time.Second,
 			IdleTimeout:       5 * time.Second,
 		},
-		setupUserRoutes: opts.Routes,
-		sm:              sm,
+		sm: sm,
 	}
 }
 
 func (s *Server) Start() error {
-	s.log.Event("Starting http server", 1)
+	s.log.Event("Starting http server", 1, "url", s.baseURL)
 
 	s.setupRoutes()
 

@@ -16,21 +16,22 @@ import (
 	"maragu.dev/snorkel"
 )
 
-type Database struct {
+type Helper struct {
 	DB        *sqlx.DB
 	jobsQueue *goqite.Queue
 	log       *snorkel.Logger
 	path      string
 }
 
-type NewDatabaseOptions struct {
-	Log  *snorkel.Logger
-	Path string
+type NewHelperOptions struct {
+	HelperInjector func(*Helper)
+	Log            *snorkel.Logger
+	Path           string
 }
 
-// NewDatabase with the given options.
+// NewHelper with the given options.
 // If no logger is provided, logs are discarded.
-func NewDatabase(opts NewDatabaseOptions) *Database {
+func NewHelper(opts NewHelperOptions) *Helper {
 	if opts.Log == nil {
 		opts.Log = snorkel.New(snorkel.Options{W: io.Discard})
 	}
@@ -40,20 +41,20 @@ func NewDatabase(opts NewDatabaseOptions) *Database {
 	// - Enable foreign key checks
 	opts.Path += "?_journal=WAL&_timeout=5000&_fk=true"
 
-	return &Database{
+	return &Helper{
 		log:  opts.Log,
 		path: opts.Path,
 	}
 }
 
-func (d *Database) Connect() error {
+func (h *Helper) Connect() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	d.log.Event("Starting database", 1, "path", d.path)
+	h.log.Event("Starting database", 1, "path", h.path)
 
 	var err error
-	d.DB, err = sqlx.ConnectContext(ctx, "sqlite3", d.path)
+	h.DB, err = sqlx.ConnectContext(ctx, "sqlite3", h.path)
 	if err != nil {
 		return err
 	}
@@ -62,8 +63,8 @@ func (d *Database) Connect() error {
 }
 
 // InTransaction runs callback in a transaction, and makes sure to handle rollbacks, commits etc.
-func (d *Database) InTransaction(ctx context.Context, callback func(tx *sqlx.Tx) error) (err error) {
-	tx, err := d.DB.BeginTxx(ctx, &sql.TxOptions{Isolation: sql.LevelSerializable})
+func (h *Helper) InTransaction(ctx context.Context, callback func(tx *sqlx.Tx) error) (err error) {
+	tx, err := h.DB.BeginTxx(ctx, &sql.TxOptions{Isolation: sql.LevelSerializable})
 	if err != nil {
 		return errors.Wrap(err, "error beginning transaction")
 	}
@@ -90,16 +91,16 @@ func rollback(tx *sqlx.Tx, err error) error {
 	return err
 }
 
-func (d *Database) MigrateUp(ctx context.Context) error {
+func (h *Helper) MigrateUp(ctx context.Context) error {
 	// TODO some migrations should be in goo
-	return migrate.Up(ctx, d.DB.DB, d.getMigrations())
+	return migrate.Up(ctx, h.DB.DB, h.getMigrations())
 }
 
-func (d *Database) MigrateDown(ctx context.Context) error {
-	return migrate.Down(ctx, d.DB.DB, d.getMigrations())
+func (h *Helper) MigrateDown(ctx context.Context) error {
+	return migrate.Down(ctx, h.DB.DB, h.getMigrations())
 }
 
-func (d *Database) getMigrations() fs.FS {
+func (h *Helper) getMigrations() fs.FS {
 	for _, path := range []string{"sql/migrations", "../sql/migrations"} {
 		migrations := os.DirFS(path)
 
@@ -112,13 +113,13 @@ func (d *Database) getMigrations() fs.FS {
 	panic("no migrations found")
 }
 
-func (d *Database) Ping(ctx context.Context) error {
-	return d.InTransaction(ctx, func(tx *sqlx.Tx) error {
+func (h *Helper) Ping(ctx context.Context) error {
+	return h.InTransaction(ctx, func(tx *sqlx.Tx) error {
 		_, err := tx.ExecContext(ctx, `select 1`)
 		return err
 	})
 }
 
-func (d *Database) SetJobsQueue(q *goqite.Queue) {
-	d.jobsQueue = q
+func (h *Helper) SetJobsQueue(q *goqite.Queue) {
+	h.jobsQueue = q
 }
