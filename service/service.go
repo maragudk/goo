@@ -114,15 +114,15 @@ func migrate(opts Options) error {
 
 	_ = env.Load()
 
-	db := sql.NewHelper(sql.NewHelperOptions{
+	sqlHelper := sql.NewHelper(sql.NewHelperOptions{
 		Log:  log,
 		Path: env.GetStringOrDefault("DATABASE_PATH", "app.db"),
 	})
-	if err := db.Connect(); err != nil {
+	if err := sqlHelper.Connect(); err != nil {
 		return err
 	}
 
-	if err := db.MigrateUp(context.Background()); err != nil {
+	if err := sqlHelper.MigrateUp(context.Background()); err != nil {
 		return err
 	}
 

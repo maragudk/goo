@@ -24,9 +24,8 @@ type Helper struct {
 }
 
 type NewHelperOptions struct {
-	HelperInjector func(*Helper)
-	Log            *snorkel.Logger
-	Path           string
+	Log  *snorkel.Logger
+	Path string
 }
 
 // NewHelper with the given options.
