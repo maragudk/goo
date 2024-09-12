@@ -19,6 +19,7 @@ func (s *Server) setupRoutes() {
 
 		r.Group(func(r chi.Router) {
 			r.Use(s.sm.LoadAndSave)
+			r.Use(httph.NoClickjacking)
 
 			if s.setupUserRoutes != nil {
 				s.setupUserRoutes(r)
