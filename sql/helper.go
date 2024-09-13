@@ -62,7 +62,7 @@ func (h *Helper) Connect() error {
 }
 
 // InTransaction runs callback in a transaction, and makes sure to handle rollbacks, commits etc.
-func (h *Helper) InTransaction(ctx context.Context, callback func(tx *sqlx.Tx) error) (err error) {
+func (h *Helper) InTransaction(ctx context.Context, callback func(tx *Tx) error) (err error) {
 	tx, err := h.DB.BeginTxx(ctx, &sql.TxOptions{Isolation: sql.LevelSerializable})
 	if err != nil {
 		return errors.Wrap(err, "error beginning transaction")
@@ -72,7 +72,7 @@ func (h *Helper) InTransaction(ctx context.Context, callback func(tx *sqlx.Tx) e
 			err = rollback(tx, errors.Newf("panic: %v", rec))
 		}
 	}()
-	if err := callback(tx); err != nil {
+	if err := callback(&Tx{Tx: tx}); err != nil {
 		return rollback(tx, err)
 	}
 	if err := tx.Commit(); err != nil {
@@ -113,12 +113,41 @@ func (h *Helper) getMigrations() fs.FS {
 }
 
 func (h *Helper) Ping(ctx context.Context) error {
-	return h.InTransaction(ctx, func(tx *sqlx.Tx) error {
-		_, err := tx.ExecContext(ctx, `select 1`)
-		return err
+	return h.InTransaction(ctx, func(tx *Tx) error {
+		return tx.Exec(ctx, `select 1`)
 	})
 }
 
 func (h *Helper) SetJobsQueue(q *goqite.Queue) {
 	h.jobsQueue = q
+}
+
+func (h *Helper) Select(ctx context.Context, dest any, query string, args ...any) error {
+	return h.DB.SelectContext(ctx, dest, query, args...)
+}
+
+func (h *Helper) Get(ctx context.Context, dest any, query string, args ...any) error {
+	return h.DB.GetContext(ctx, dest, query, args...)
+}
+
+func (h *Helper) Exec(ctx context.Context, query string, args ...any) error {
+	_, err := h.DB.ExecContext(ctx, query, args...)
+	return err
+}
+
+type Tx struct {
+	Tx *sqlx.Tx
+}
+
+func (t *Tx) Select(ctx context.Context, dest any, query string, args ...any) error {
+	return t.Tx.SelectContext(ctx, dest, query, args...)
+}
+
+func (t *Tx) Get(ctx context.Context, dest any, query string, args ...any) error {
+	return t.Tx.GetContext(ctx, dest, query, args...)
+}
+
+func (t *Tx) Exec(ctx context.Context, query string, args ...any) error {
+	_, err := t.Tx.ExecContext(ctx, query, args...)
+	return err
 }

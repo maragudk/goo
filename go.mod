@@ -11,7 +11,7 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.23
 	golang.org/x/sync v0.8.0
 	maragu.dev/env v0.2.0
-	maragu.dev/errors v0.2.0
+	maragu.dev/errors v0.3.0
 	maragu.dev/httph v0.3.1
 	maragu.dev/is v0.2.0
 	maragu.dev/migrate v0.6.0
