@@ -7,6 +7,9 @@ require (
 	github.com/alexedwards/scs/v2 v2.8.0
 	github.com/go-chi/chi/v5 v5.1.0
 	github.com/jmoiron/sqlx v1.4.0
+	github.com/maragudk/gomponents v0.20.4
+	github.com/maragudk/gomponents-heroicons/v2 v2.0.0
+	github.com/maragudk/gomponents-htmx v0.5.0
 	github.com/maragudk/goqite v0.2.3
 	github.com/mattn/go-sqlite3 v1.14.23
 	golang.org/x/sync v0.8.0

@@ -13,6 +13,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"maragu.dev/snorkel"
 
+	"maragu.dev/goo/html"
 	"maragu.dev/goo/sql"
 )
 
@@ -23,7 +24,9 @@ type Server struct {
 	mux                *chi.Mux
 	server             *http.Server
 	httpRouterInjector func(chi.Router)
+	htmlPage           html.PageFunc
 	sm                 *scs.SessionManager
+	sqlHelper          *sql.Helper
 }
 
 type NewServerOptions struct {
@@ -31,6 +34,7 @@ type NewServerOptions struct {
 	AdminPassword      string
 	BaseURL            string
 	HTTPRouterInjector func(chi.Router)
+	HTMLPage           html.PageFunc
 	Log                *snorkel.Logger
 	SecureCookie       bool
 	SQLHelper          *sql.Helper
@@ -56,6 +60,7 @@ func NewServer(opts NewServerOptions) *Server {
 		adminPassword:      opts.AdminPassword,
 		baseURL:            strings.TrimSuffix(opts.BaseURL, "/"),
 		httpRouterInjector: opts.HTTPRouterInjector,
+		htmlPage:           opts.HTMLPage,
 		log:                opts.Log,
 		mux:                mux,
 		server: &http.Server{
@@ -66,7 +71,8 @@ func NewServer(opts NewServerOptions) *Server {
 			WriteTimeout:      5 * time.Second,
 			IdleTimeout:       5 * time.Second,
 		},
-		sm: sm,
+		sm:        sm,
+		sqlHelper: opts.SQLHelper,
 	}
 }
 

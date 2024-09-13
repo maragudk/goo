@@ -12,11 +12,13 @@ import (
 	"maragu.dev/env"
 	"maragu.dev/snorkel"
 
+	"maragu.dev/goo/html"
 	"maragu.dev/goo/http"
 	"maragu.dev/goo/sql"
 )
 
 type Options struct {
+	HTMLPage           html.PageFunc
 	HTTPRouterInjector func(chi.Router)
 	Log                *snorkel.Logger
 	Migrate            bool
@@ -75,6 +77,7 @@ func start(opts Options) error {
 		AdminPassword:      env.GetStringOrDefault("ADMIN_PASSWORD", "correct horse battery staple"),
 		BaseURL:            env.GetStringOrDefault("BASE_URL", "http://localhost:8080"),
 		HTTPRouterInjector: opts.HTTPRouterInjector,
+		HTMLPage:           opts.HTMLPage,
 		Log:                log,
 		SecureCookie:       env.GetBoolOrDefault("SECURE_COOKIE", true),
 		SQLHelper:          sqlHelper,
