@@ -67,7 +67,7 @@ func Signup(mux chi.Router, page html.PageFunc, log *snorkel.Logger, db signuppe
 	}))
 
 	mux.Post("/signup", httph.FormHandler(func(w http.ResponseWriter, r *http.Request, req signupRequest) {
-		h := ghttp.Adapt(func(w http.ResponseWriter, r *http.Request) (g.Node, error) {
+		ghttp.Adapt(func(w http.ResponseWriter, r *http.Request) (g.Node, error) {
 			// TODO this should be middleware
 			user := getUserFromContext(r.Context())
 			if user != nil {
@@ -87,8 +87,10 @@ func Signup(mux chi.Router, page html.PageFunc, log *snorkel.Logger, db signuppe
 
 			http.Redirect(w, r, "/signup/thanks", http.StatusFound)
 			return nil, nil
-		})
+		})(w, r)
+	}))
 
-		h(w, r)
+	mux.Get("/signup/thanks", ghttp.Adapt(func(w http.ResponseWriter, r *http.Request) (g.Node, error) {
+		return html.SignupThanksPage(page, html.PageProps{}), nil
 	}))
 }

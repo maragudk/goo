@@ -10,6 +10,8 @@ import (
 )
 
 func SignupPage(page PageFunc, props PageProps, newUser model.User) g.Node {
+	props.Title = "Sign up"
+
 	return page(props,
 		authPageCard(
 			Form(Action("/signup"), Method("post"), Class("space-y-6"), hx.Boost("false"),
@@ -47,6 +49,19 @@ func SignupPage(page PageFunc, props PageProps, newUser model.User) g.Node {
 				),
 
 				button(Type("submit"), g.Text(`Sign up`)),
+			),
+		),
+	)
+}
+
+func SignupThanksPage(page PageFunc, props PageProps) g.Node {
+	props.Title = "Thanks!"
+
+	return page(props,
+		authPageCard(
+			Div(Class("text-center"),
+				h1(g.Text(`Thanks!`)),
+				g.Text(`Now check your inbox.`),
 			),
 		),
 	)
