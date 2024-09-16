@@ -5,6 +5,8 @@
 
 The goo to glue web services together.
 
+It's probably not useful to you directly, but maybe there's something for you to learn from the code. Enjoy!
+
 ```shell
 go get maragu.dev/goo
 ```
