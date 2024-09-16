@@ -21,8 +21,13 @@ func (s *Server) setupRoutes() {
 		r.Group(func(r chi.Router) {
 			r.Use(s.sm.LoadAndSave)
 			r.Use(httph.NoClickjacking)
+			r.Use(Authenticate(false, s.sm, s.sqlHelper, s.log))
+
+			// TODO should CSP middleware be loaded here already? Does ordering matter in chi?
 
 			Signup(r, s.htmlPage, s.log, s.sqlHelper)
+			Login(r, s.htmlPage, s.log, s.sqlHelper, s.sm)
+			Logout(r, s.htmlPage, s.log, s.sm)
 
 			if s.httpRouterInjector != nil {
 				s.httpRouterInjector(r)

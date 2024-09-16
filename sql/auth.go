@@ -46,6 +46,8 @@ func (h *Helper) Signup(ctx context.Context, u model.User) (model.User, error) {
 		}
 
 		// TODO create job to send signup email to user with token
+		h.log.Event("signup", 1, "url", "http://localhost:8080/login?token="+token)
+
 		return nil
 	})
 	return u, err
@@ -95,9 +97,9 @@ func (h *Helper) Login(ctx context.Context, token string) (model.User, error) {
 	return u, err
 }
 
-// LoginWithEmail checks whether the user exists and is active, creates a login token, and creates a job to send
+// TryLogin checks whether the user exists and is active, creates a login token, and creates a job to send
 // an email with the token in it.
-func (h *Helper) LoginWithEmail(ctx context.Context, email model.Email) error {
+func (h *Helper) TryLogin(ctx context.Context, email model.Email) error {
 	return h.InTransaction(ctx, func(tx *Tx) error {
 		var exists bool
 		query := `select exists (select 1 from users where email = ?)`
@@ -127,9 +129,22 @@ func (h *Helper) LoginWithEmail(ctx context.Context, email model.Email) error {
 		}
 
 		// TODO send login email with token
+		h.log.Event("login", 1, "url", "http://localhost:8080/login?token="+token)
 
 		return nil
 	})
+}
+
+func (h *Helper) GetUser(ctx context.Context, id model.ID) (model.User, error) {
+	var u model.User
+	if err := h.Get(ctx, &u, `select * from users where id = ?`, id); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return u, model.ErrorUserNotFound
+		}
+		return u, err
+	}
+
+	return u, nil
 }
 
 func createToken() (string, error) {

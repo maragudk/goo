@@ -12,7 +12,7 @@ import (
 	"maragu.dev/goo/sqltest"
 )
 
-func TestDatabase_Signup(t *testing.T) {
+func TestHelper_Signup(t *testing.T) {
 	t.Run("signs up an account and user, and creates a token", func(t *testing.T) {
 		h := sqltest.NewHelper(t)
 
@@ -63,7 +63,7 @@ func TestDatabase_Signup(t *testing.T) {
 	})
 }
 
-func TestDatabase_Login(t *testing.T) {
+func TestHelper_Login(t *testing.T) {
 	t.Run("marks token used and user confirmed and returns user", func(t *testing.T) {
 		h := sqltest.NewHelper(t)
 
@@ -143,7 +143,7 @@ func TestDatabase_Login(t *testing.T) {
 	})
 }
 
-func TestDatabase_LoginWithEmail(t *testing.T) {
+func TestHelper_TryLogin(t *testing.T) {
 	t.Run("creates token", func(t *testing.T) {
 		h := sqltest.NewHelper(t)
 
@@ -154,7 +154,7 @@ func TestDatabase_LoginWithEmail(t *testing.T) {
 		u, err := h.Signup(context.Background(), u)
 		is.NotError(t, err)
 
-		err = h.LoginWithEmail(context.Background(), "me@example.com")
+		err = h.TryLogin(context.Background(), "me@example.com")
 		is.NotError(t, err)
 
 		var token string
@@ -165,7 +165,7 @@ func TestDatabase_LoginWithEmail(t *testing.T) {
 	t.Run("errors when user not found", func(t *testing.T) {
 		h := sqltest.NewHelper(t)
 
-		err := h.LoginWithEmail(context.Background(), "doesnotexist@example.com")
+		err := h.TryLogin(context.Background(), "doesnotexist@example.com")
 		is.Error(t, model.ErrorUserNotFound, err)
 	})
 
@@ -182,7 +182,26 @@ func TestDatabase_LoginWithEmail(t *testing.T) {
 		err = h.Exec(context.Background(), `update users set active = false where id = ?`, u.ID)
 		is.NotError(t, err)
 
-		err = h.LoginWithEmail(context.Background(), "me@example.com")
+		err = h.TryLogin(context.Background(), "me@example.com")
 		is.Error(t, model.ErrorUserInactive, err)
+	})
+}
+
+func TestHelper_GetUser(t *testing.T) {
+	t.Run("returns user", func(t *testing.T) {
+		h := sqltest.NewHelper(t)
+
+		u := model.User{
+			Name:  "Me",
+			Email: "me@example.com",
+		}
+		u, err := h.Signup(context.Background(), u)
+		is.NotError(t, err)
+
+		u2, err := h.GetUser(context.Background(), u.ID)
+		is.NotError(t, err)
+
+		is.Equal(t, u.ID, u2.ID)
+		is.Equal(t, u.Name, u2.Name)
 	})
 }

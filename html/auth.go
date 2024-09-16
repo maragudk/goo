@@ -2,19 +2,17 @@ package html
 
 import (
 	g "github.com/maragudk/gomponents"
-	"github.com/maragudk/gomponents-heroicons/v2/mini"
-	hx "github.com/maragudk/gomponents-htmx"
 	. "github.com/maragudk/gomponents/html"
 
 	"maragu.dev/goo/model"
 )
 
-func SignupPage(page PageFunc, props PageProps, newUser model.User) g.Node {
-	props.Title = "Sign up"
+func SignupPage(page PageFunc, newUser model.User) g.Node {
+	props := PageProps{Title: "Sign up"}
 
 	return page(props,
 		authPageCard(
-			Form(Action("/signup"), Method("post"), Class("space-y-6"), hx.Boost("false"),
+			Form(Action("/signup"), Method("post"), Class("space-y-6"),
 				Div(Class("text-center"),
 					h1(g.Text(`Sign up`)),
 					a(Href("/login"), g.Text("or log in")),
@@ -54,8 +52,8 @@ func SignupPage(page PageFunc, props PageProps, newUser model.User) g.Node {
 	)
 }
 
-func SignupThanksPage(page PageFunc, props PageProps) g.Node {
-	props.Title = "Thanks!"
+func SignupThanksPage(page PageFunc) g.Node {
+	props := PageProps{Title: "Thanks!"}
 
 	return page(props,
 		authPageCard(
@@ -67,45 +65,97 @@ func SignupThanksPage(page PageFunc, props PageProps) g.Node {
 	)
 }
 
-func authPageCard(children ...g.Node) g.Node {
-	return Div(Class("sm:mx-auto sm:w-full sm:max-w-md"),
-		card(g.Group(children)),
+func LoginPage(page PageFunc, email model.Email) g.Node {
+	props := PageProps{Title: "Log in"}
+
+	return page(props,
+		authPageCard(
+			Form(Action("/login/email"), Method("post"), Class("space-y-6"),
+				Div(Class("text-center"),
+					h1(g.Text(`Log in`)),
+					a(Href("/signup"), g.Text("or sign up")),
+				),
+
+				g.If(email.String() != "",
+					alertBox(g.Raw(`It doesn’t look like anyone’s signed up with that email address. `), a(Href("/signup"), g.Text("Sign up instead?"))),
+				),
+
+				Div(
+					label("email", "Email"),
+					input(Type("email"), ID("email"), Name("email"), AutoComplete("email"), Placeholder("me@example.com"), Required(), AutoFocus(), Value(email.String())),
+				),
+
+				button(Type("submit"), g.Text(`Log in`)),
+			),
+		),
 	)
 }
 
-func card(children ...g.Node) g.Node {
-	return Div(Class("bg-white py-8 px-4 shadow rounded-lg sm:px-10"), g.Group(children))
-}
+func LoginCheckEmailPage(page PageFunc) g.Node {
+	props := PageProps{Title: "Check your email"}
 
-func label(id, text string) g.Node {
-	return Label(For(id), Class("block text-sm text-gray-700 mb-1"), g.Text(text))
-}
-
-func input(children ...g.Node) g.Node {
-	return Input(Class("block w-full rounded-md border border-gray-300 focus:border-primary-500 px-3 py-2 placeholder-gray-400 shadow-sm sm:text-sm text-gray-900 focus:ring-primary-500"), g.Group(children))
-}
-
-func button(children ...g.Node) g.Node {
-	return Button(Class("block w-full rounded-md bg-primary-600 hover:bg-primary-700 px-4 py-2 font-medium text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"), g.Group(children))
-}
-
-func h1(children ...g.Node) g.Node {
-	return H1(Class("font-medium text-gray-900 text-xl"), g.Group(children))
-}
-
-func a(children ...g.Node) g.Node {
-	return A(Class("text-primary-600 hover:text-primary-500"), g.Group(children))
-}
-
-func alertBox(children ...g.Node) g.Node {
-	return Div(Class("rounded-md bg-yellow-50 p-4"),
-		Div(Class("flex items-center space-x-2"),
-			Div(Class("flex-shrink-0"),
-				mini.ExclamationTriangle(Class("h-5 w-5 text-yellow-400")),
+	return page(props,
+		authPageCard(
+			Div(Class("text-center"),
+				h1(g.Text(`Check your email`)),
 			),
-			Div(Class("text-yellow-700"),
-				g.Group(children),
+
+			p("mt-8", g.Raw(`Now check your email and click the link in it.`)),
+		),
+	)
+}
+
+func LoginSubmitTokenPage(page PageFunc, token string) g.Node {
+	props := PageProps{Title: "Log in"}
+
+	return page(props,
+		authPageCard(
+			Form(Action("/login/token"), Method("post"),
+				Div(Class("text-center"),
+					h1(g.Text(`Log in`)),
+				),
+
+				p("mt-8 mb-4", g.Raw(`Click the button to log in. 😊`)),
+
+				Input(Type("hidden"), Name("token"), Value(token)),
+
+				button(Type("submit"), g.Text(`Log in`)),
 			),
 		),
+	)
+}
+
+func LoginUserInactivePage(page PageFunc) g.Node {
+	props := PageProps{Title: "Your user is inactive"}
+
+	return page(props,
+		authPageCard(
+			Div(Class("text-center"),
+				h1(g.Text(`Account inactive`)),
+			),
+
+			p("mt-8", g.Raw(`Your account is inactive. If you think this is an error, `),
+				a(Href("mailto:support@maragu.dk"), g.Text("reach out to support")), g.Text(".")),
+		),
+	)
+}
+
+func LoginTokenExpiredPage(page PageFunc) g.Node {
+	props := PageProps{Title: "Your link has expired"}
+
+	return page(props,
+		authPageCard(
+			Div(Class("text-center"),
+				h1(g.Text(`Link expired`)),
+			),
+
+			p("mt-8", g.Raw(`Your link has expired. `), a(Href("/login"), g.Text("Log in again")), g.Text(".")),
+		),
+	)
+}
+
+func authPageCard(children ...g.Node) g.Node {
+	return Div(Class("sm:mx-auto sm:w-full sm:max-w-md"),
+		card(g.Group(children)),
 	)
 }
