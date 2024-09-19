@@ -33,8 +33,6 @@ github.com/maragudk/gomponents v0.20.4 h1:8ayYSzCyz1EUl/+LU5vOBR/K2wI18W7SscNAzz
 github.com/maragudk/gomponents v0.20.4/go.mod h1:nHkNnZL6ODgMBeJhrZjkMHVvNdoYsfmpKB2/hjdQ0Hg=
 github.com/maragudk/gomponents-heroicons/v2 v2.0.0 h1:zvkmcIhb4MbWIb6iP0by1AeQp8uR3ro4/XGNwfJH2XU=
 github.com/maragudk/gomponents-heroicons/v2 v2.0.0/go.mod h1:VpIu9qDA7B4xB/ghId8DMFQXeAOVISZ5GMOZY8Aq/YY=
-github.com/maragudk/gomponents-htmx v0.5.0 h1:sWtiRa72YmymgxccjTNZW3h0akKsZvnhYke9RQiS9dk=
-github.com/maragudk/gomponents-htmx v0.5.0/go.mod h1:XgI7WE6ECWlyeVQ9Ix3R6aoKS4HtCSYtuQ4iH27GVDE=
 github.com/maragudk/goqite v0.2.3 h1:R8oVD6IMCQfjhCKyGIYwWxR1w8yxjvT/3uwYtA656jE=
 github.com/maragudk/goqite v0.2.3/go.mod h1:5430TCLkycUeLE314c9fifTrTbwcJqJXdU3iyEiF6hM=
 github.com/maragudk/is v0.1.0 h1:obq9anZNmOYcaNbeT0LMyjIexdNeYTw/TLAPD/BnZHA=
@@ -61,5 +59,5 @@ maragu.dev/is v0.2.0 h1:poeuVEA5GG3vrDpGmzo2KjWtIMZmqUyvGnOB0/pemig=
 maragu.dev/is v0.2.0/go.mod h1:bviaM5S0fBshCw7wuumFGTju/izopZ/Yvq4g7Klc7y8=
 maragu.dev/migrate v0.6.0 h1:gJLAIVaRh9z9sN55Q2sWwScpEH+JsT6N0L1DnzedXFE=
 maragu.dev/migrate v0.6.0/go.mod h1:TdZBD5wRvBbzLocsSV08kyvLiLCn0Q6DvgYHmyygWVQ=
-maragu.dev/snorkel v0.4.0 h1:RU/Gvpar0aBbLUxAOn42nJ60reoINaej86Y9vCcaL4M=
-maragu.dev/snorkel v0.4.0/go.mod h1:9EGmBu6W2D4YQO5tBonnl+8+ek6O0rTcXu128P/cZQE=
+maragu.dev/snorkel v0.4.1 h1:ZTCgo2ZkPNc4UtzxtUpK131/gwLYRBjvuMYD7P8UXd8=
+maragu.dev/snorkel v0.4.1/go.mod h1:9EGmBu6W2D4YQO5tBonnl+8+ek6O0rTcXu128P/cZQE=
