@@ -1,6 +1,9 @@
 package html
 
 import (
+	"context"
+	"net/http"
+
 	g "github.com/maragudk/gomponents"
 	"github.com/maragudk/gomponents-heroicons/v2/mini"
 	. "github.com/maragudk/gomponents/html"
@@ -12,6 +15,8 @@ type PageProps struct {
 	Title       string
 	Description string
 	User        *model.User
+	Ctx         context.Context
+	Req         *http.Request
 }
 
 type PageFunc = func(props PageProps, children ...g.Node) g.Node

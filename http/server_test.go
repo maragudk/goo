@@ -6,7 +6,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/go-chi/chi/v5"
 	"maragu.dev/is"
 
 	"maragu.dev/goo/http"
@@ -17,8 +16,8 @@ func TestServer_Start(t *testing.T) {
 	t.Run("can start and stop server", func(t *testing.T) {
 		sqlHelper := sqltest.NewHelper(t)
 
-		httpRouterInjector := func(r chi.Router) {
-			r.Get("/", func(w http2.ResponseWriter, r *http2.Request) {
+		httpRouterInjector := func(r *http.Router) {
+			r.Mux.Get("/", func(w http2.ResponseWriter, r *http2.Request) {
 				_, _ = w.Write([]byte("OK"))
 			})
 		}

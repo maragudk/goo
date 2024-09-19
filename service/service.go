@@ -5,7 +5,6 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/maragudk/goqite"
 	qjobs "github.com/maragudk/goqite/jobs"
 	"golang.org/x/sync/errgroup"
@@ -19,7 +18,7 @@ import (
 
 type Options struct {
 	HTMLPage           html.PageFunc
-	HTTPRouterInjector func(chi.Router)
+	HTTPRouterInjector func(*http.Router)
 	Log                *snorkel.Logger
 	Migrate            bool
 	SQLHelperInjector  func(*sql.Helper)

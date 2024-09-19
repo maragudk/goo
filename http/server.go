@@ -21,9 +21,9 @@ type Server struct {
 	adminPassword      string
 	baseURL            string
 	log                *snorkel.Logger
-	mux                *chi.Mux
+	r                  *Router
 	server             *http.Server
-	httpRouterInjector func(chi.Router)
+	httpRouterInjector func(*Router)
 	htmlPage           html.PageFunc
 	sm                 *scs.SessionManager
 	sqlHelper          *sql.Helper
@@ -33,7 +33,7 @@ type NewServerOptions struct {
 	Address            string
 	AdminPassword      string
 	BaseURL            string
-	HTTPRouterInjector func(chi.Router)
+	HTTPRouterInjector func(*Router)
 	HTMLPage           html.PageFunc
 	Log                *snorkel.Logger
 	SecureCookie       bool
@@ -62,7 +62,7 @@ func NewServer(opts NewServerOptions) *Server {
 		httpRouterInjector: opts.HTTPRouterInjector,
 		htmlPage:           opts.HTMLPage,
 		log:                opts.Log,
-		mux:                mux,
+		r:                  &Router{Mux: mux},
 		server: &http.Server{
 			Addr:              opts.Address,
 			Handler:           mux,
