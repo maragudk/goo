@@ -93,6 +93,29 @@ func TestHelper_Login(t *testing.T) {
 		is.True(t, u.Confirmed)
 	})
 
+	t.Run("can login twice", func(t *testing.T) {
+		h := sqltest.NewHelper(t)
+
+		u := model.User{
+			Name:  "Me",
+			Email: "Me@example.com",
+		}
+		u, err := h.Signup(context.Background(), u)
+		is.NotError(t, err)
+
+		userID := u.ID
+
+		var token string
+		err = h.Get(context.Background(), &token, `select value from tokens where userID = ?`, userID)
+		is.NotError(t, err)
+
+		_, err = h.Login(context.Background(), token)
+		is.NotError(t, err)
+
+		_, err = h.Login(context.Background(), token)
+		is.NotError(t, err)
+	})
+
 	t.Run("returns token expired error when token is expired", func(t *testing.T) {
 		h := sqltest.NewHelper(t)
 

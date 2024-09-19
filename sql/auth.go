@@ -87,7 +87,7 @@ func (h *Helper) Login(ctx context.Context, token string) (model.User, error) {
 			return err
 		}
 
-		query = `update users set confirmed = 1 where id = ? and not confirmed returning *`
+		query = `update users set confirmed = 1 where id = ? returning *`
 		if err := tx.Get(ctx, &u, query, userID); err != nil {
 			return err
 		}
