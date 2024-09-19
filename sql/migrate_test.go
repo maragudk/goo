@@ -11,12 +11,17 @@ import (
 
 func TestHelper_Migrate(t *testing.T) {
 	t.Run("can migrate down and back up", func(t *testing.T) {
-		db := sqltest.NewHelper(t)
+		sqlHelper := sqltest.NewHelper(t)
 
-		err := db.MigrateDown(context.Background())
+		err := sqlHelper.MigrateDown(context.Background())
 		is.NotError(t, err)
 
-		err = db.MigrateUp(context.Background())
+		err = sqlHelper.MigrateUp(context.Background())
 		is.NotError(t, err)
+
+		var version string
+		err = sqlHelper.Get(context.Background(), &version, `select version from migrations`)
+		is.NotError(t, err)
+		is.True(t, len(version) > 0)
 	})
 }

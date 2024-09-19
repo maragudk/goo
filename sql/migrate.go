@@ -6,6 +6,7 @@ import (
 	"io"
 	"io/fs"
 	"os"
+	"path/filepath"
 	"sync"
 	"testing/fstest"
 
@@ -18,7 +19,6 @@ var migrationsOnce sync.Once
 var allMigrations fs.FS
 
 func (h *Helper) MigrateUp(ctx context.Context) error {
-	// TODO some migrations should be in goo
 	return migrate.Up(ctx, h.DB.DB, h.getMigrations())
 }
 
@@ -82,7 +82,8 @@ func toMapFS(filesystems ...fs.FS) (fstest.MapFS, error) {
 				return err
 			}
 
-			result[path] = &fstest.MapFile{
+			base := filepath.Base(path)
+			result[base] = &fstest.MapFile{
 				Data:    data,
 				Mode:    info.Mode(),
 				ModTime: info.ModTime(),
