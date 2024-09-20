@@ -111,12 +111,6 @@ func LoginSubmitTokenPage(page PageFunc, token string) g.Node {
 	return page(props,
 		authPageCard(
 			Form(Action("/login/token"), Method("post"),
-				Div(Class("text-center"),
-					h1(g.Text(`Log in`)),
-				),
-
-				p("mt-8 mb-4", g.Raw(`Click the button to log in. 😊`)),
-
 				Input(Type("hidden"), Name("token"), Value(token)),
 
 				button(Type("submit"), g.Text(`Log in`)),
