@@ -29,8 +29,8 @@ github.com/jmoiron/sqlx v1.4.0/go.mod h1:ZrZ7UsYB/weZdl2Bxg6jCRO9c3YHl8r3ahlKmRT
 github.com/lib/pq v1.10.9 h1:YXG7RB+JIjhP29X+OtkiDnYaXQwpS4JEWq7dtCCRUEw=
 github.com/lib/pq v1.10.9/go.mod h1:AlVN5x4E4T544tWzH6hKfbfQvm3HdbOxrmggDNAPY9o=
 github.com/maragudk/gomponents v0.20.0/go.mod h1:nHkNnZL6ODgMBeJhrZjkMHVvNdoYsfmpKB2/hjdQ0Hg=
-github.com/maragudk/gomponents v0.20.4 h1:8ayYSzCyz1EUl/+LU5vOBR/K2wI18W7SscNAzzsxsDo=
-github.com/maragudk/gomponents v0.20.4/go.mod h1:nHkNnZL6ODgMBeJhrZjkMHVvNdoYsfmpKB2/hjdQ0Hg=
+github.com/maragudk/gomponents v0.20.5 h1:Z8phdQIW+NqAGO0clMh/wyv1/M7viUBf7/EL44gvwtI=
+github.com/maragudk/gomponents v0.20.5/go.mod h1:nHkNnZL6ODgMBeJhrZjkMHVvNdoYsfmpKB2/hjdQ0Hg=
 github.com/maragudk/gomponents-heroicons/v2 v2.0.0 h1:zvkmcIhb4MbWIb6iP0by1AeQp8uR3ro4/XGNwfJH2XU=
 github.com/maragudk/gomponents-heroicons/v2 v2.0.0/go.mod h1:VpIu9qDA7B4xB/ghId8DMFQXeAOVISZ5GMOZY8Aq/YY=
 github.com/maragudk/goqite v0.2.3 h1:R8oVD6IMCQfjhCKyGIYwWxR1w8yxjvT/3uwYtA656jE=
