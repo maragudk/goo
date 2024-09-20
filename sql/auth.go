@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"database/sql"
 	"fmt"
+	"strings"
 
 	"maragu.dev/errors"
 
@@ -29,6 +30,8 @@ func (h *Helper) Signup(ctx context.Context, u model.User) (model.User, error) {
 			return err
 		}
 
+		u.Name = strings.TrimSpace(u.Name)
+
 		var a model.Account
 		query = `insert into accounts (name) values (?) returning *`
 		if err := tx.Get(ctx, &a, query, u.Name); err != nil {
@@ -45,8 +48,15 @@ func (h *Helper) Signup(ctx context.Context, u model.User) (model.User, error) {
 			return errors.Wrap(err, "error creating token")
 		}
 
-		// TODO create job to send signup email to user with token
-		h.log.Event("signup", 1, "url", "http://localhost:8080/login?token="+token)
+		m := stringMap{
+			"type":  "signup",
+			"name":  u.Name,
+			"email": u.Email.ToLower().String(),
+			"token": token,
+		}
+		if err := h.CreateJobInTx(ctx, tx, "send-email", m); err != nil {
+			return errors.Wrap(err, "error creating job to send signup email")
+		}
 
 		return nil
 	})
@@ -128,8 +138,21 @@ func (h *Helper) TryLogin(ctx context.Context, email model.Email) error {
 			return errors.Wrap(err, "error creating token")
 		}
 
-		// TODO send login email with token
-		h.log.Event("login", 1, "url", "http://localhost:8080/login?token="+token)
+		var u model.User
+		query = `select * from users where email = ?`
+		if err := tx.Get(ctx, &u, query, email); err != nil {
+			return errors.Wrap(err, "error getting user")
+		}
+
+		m := stringMap{
+			"type":  "login",
+			"name":  u.Name,
+			"email": u.Email.ToLower().String(),
+			"token": token,
+		}
+		if err := h.CreateJobInTx(ctx, tx, "send-email", m); err != nil {
+			return errors.Wrap(err, "error creating job to send login email")
+		}
 
 		return nil
 	})

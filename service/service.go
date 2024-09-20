@@ -11,8 +11,10 @@ import (
 	"maragu.dev/env"
 	"maragu.dev/snorkel"
 
+	"maragu.dev/goo/email"
 	"maragu.dev/goo/html"
 	"maragu.dev/goo/http"
+	"maragu.dev/goo/jobs"
 	"maragu.dev/goo/sql"
 )
 
@@ -70,11 +72,30 @@ func start(opts Options) error {
 		Queue: q,
 	})
 
-	sqlHelper.SetJobsQueue(q)
+	baseURL := env.GetStringOrDefault("BASE_URL", "http://localhost:8080")
+
+	sender := email.NewSender(email.NewSenderOptions{
+		BaseURL:                   baseURL,
+		Log:                       log,
+		MarketingEmailAddress:     env.GetStringOrDefault("MARKETING_EMAIL_ADDRESS", "marketing@example.com"),
+		MarketingEmailName:        env.GetStringOrDefault("MARKETING_EMAIL_NAME", "Marketing"),
+		ReplyToEmailAddress:       env.GetStringOrDefault("REPLY_TO_EMAIL_ADDRESS", "support@example.com"),
+		ReplyToEmailName:          env.GetStringOrDefault("REPLY_TO_EMAIL_NAME", "Support"),
+		Token:                     env.GetStringOrDefault("POSTMARK_TOKEN", ""),
+		TransactionalEmailAddress: env.GetStringOrDefault("TRANSACTIONAL_EMAIL_ADDRESS", "transactional@example.com"),
+		TransactionalEmailName:    env.GetStringOrDefault("TRANSACTIONAL_EMAIL_NAME", "Transactional"),
+	})
+
+	jobs.Register(r, jobs.RegisterOpts{
+		Log:    log,
+		Sender: sender,
+	})
+
+	sqlHelper.JobsQ = q
 
 	s := http.NewServer(http.NewServerOptions{
 		AdminPassword:      env.GetStringOrDefault("ADMIN_PASSWORD", "correct horse battery staple"),
-		BaseURL:            env.GetStringOrDefault("BASE_URL", "http://localhost:8080"),
+		BaseURL:            baseURL,
 		HTTPRouterInjector: opts.HTTPRouterInjector,
 		HTMLPage:           opts.HTMLPage,
 		Log:                log,

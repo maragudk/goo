@@ -13,7 +13,7 @@ import (
 )
 
 func TestHelper_Signup(t *testing.T) {
-	t.Run("signs up an account and user, and creates a token", func(t *testing.T) {
+	t.Run("signs up an account and user, creates a token, and creates a job to send an email", func(t *testing.T) {
 		h := sqltest.NewHelper(t)
 
 		u := model.User{
@@ -46,6 +46,10 @@ func TestHelper_Signup(t *testing.T) {
 		is.NotError(t, err)
 		is.Equal(t, 34, len(token))
 		is.True(t, strings.HasPrefix(token, "t_"))
+
+		m, err := h.JobsQ.Receive(context.Background())
+		is.NotError(t, err)
+		is.NotNil(t, m)
 	})
 
 	t.Run("errors on duplicate email", func(t *testing.T) {
@@ -167,7 +171,7 @@ func TestHelper_Login(t *testing.T) {
 }
 
 func TestHelper_TryLogin(t *testing.T) {
-	t.Run("creates token", func(t *testing.T) {
+	t.Run("creates token and job to send login email", func(t *testing.T) {
 		h := sqltest.NewHelper(t)
 
 		u := model.User{
@@ -177,8 +181,16 @@ func TestHelper_TryLogin(t *testing.T) {
 		u, err := h.Signup(context.Background(), u)
 		is.NotError(t, err)
 
+		m, err := h.JobsQ.Receive(context.Background())
+		is.NotError(t, err)
+		is.NotNil(t, m)
+
 		err = h.TryLogin(context.Background(), "me@example.com")
 		is.NotError(t, err)
+
+		m, err = h.JobsQ.Receive(context.Background())
+		is.NotError(t, err)
+		is.NotNil(t, m)
 
 		var token string
 		err = h.Get(context.Background(), &token, `select value from tokens where userID = ?`, u.ID)

@@ -14,10 +14,10 @@ import (
 )
 
 type Helper struct {
-	DB        *sqlx.DB
-	jobsQueue *goqite.Queue
-	log       *snorkel.Logger
-	path      string
+	DB    *sqlx.DB
+	JobsQ *goqite.Queue
+	log   *snorkel.Logger
+	path  string
 }
 
 type NewHelperOptions struct {
@@ -91,10 +91,6 @@ func (h *Helper) Ping(ctx context.Context) error {
 	return h.InTransaction(ctx, func(tx *Tx) error {
 		return tx.Exec(ctx, `select 1`)
 	})
-}
-
-func (h *Helper) SetJobsQueue(q *goqite.Queue) {
-	h.jobsQueue = q
 }
 
 func (h *Helper) Select(ctx context.Context, dest any, query string, args ...any) error {

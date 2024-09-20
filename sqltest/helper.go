@@ -48,7 +48,7 @@ func NewHelper(t *testing.T) *sql.Helper {
 		DB:   sqlHelper.DB.DB,
 		Name: "jobs",
 	})
-	sqlHelper.SetJobsQueue(q)
+	sqlHelper.JobsQ = q
 
 	return sqlHelper
 }
