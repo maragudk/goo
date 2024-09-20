@@ -45,7 +45,7 @@ func input(children ...g.Node) g.Node {
 }
 
 func button(children ...g.Node) g.Node {
-	return Button(Class("block w-full rounded-md bg-primary-600 hover:bg-primary-700 px-4 py-2 font-medium text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"), g.Group(children))
+	return Button(Class("block w-full rounded-md bg-primary-600 hover:bg-primary-700 px-4 py-2 font-medium text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 font-sans"), g.Group(children))
 }
 
 func h1(children ...g.Node) g.Node {
