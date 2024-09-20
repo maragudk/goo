@@ -2,6 +2,8 @@ package sqltest
 
 import (
 	"context"
+	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/maragudk/goqite"
@@ -23,11 +25,16 @@ func (t *testWriter) Write(p []byte) (n int, err error) {
 func NewHelper(t *testing.T) *sql.Helper {
 	t.Helper()
 
+	cleanup(t)
+	t.Cleanup(func() {
+		cleanup(t)
+	})
+
 	sqlHelper := sql.NewHelper(sql.NewHelperOptions{
 		Log: snorkel.New(snorkel.Options{
 			W: &testWriter{t: t},
 		}),
-		Path: ":memory:",
+		Path: "test.db",
 	})
 	if err := sqlHelper.Connect(); err != nil {
 		t.Fatal(err)
@@ -44,4 +51,18 @@ func NewHelper(t *testing.T) *sql.Helper {
 	sqlHelper.SetJobsQueue(q)
 
 	return sqlHelper
+}
+
+func cleanup(t *testing.T) {
+	t.Helper()
+
+	files, err := filepath.Glob("test.db*")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, file := range files {
+		if err := os.Remove(file); err != nil {
+			t.Fatal(err)
+		}
+	}
 }

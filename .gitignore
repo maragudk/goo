@@ -3,3 +3,4 @@
 /.env
 /public/styles/app.css
 /tailwindcss
+/test.db*
