@@ -44,6 +44,11 @@ func (h *Helper) getMigrations() fs.FS {
 		if err != nil {
 			panic(err)
 		}
+		migrationNames, err := fs.Glob(allMigrations, "*.sql")
+		if err != nil {
+			panic(err)
+		}
+		h.log.Event("Found migrations", 1, "files", migrationNames)
 	})
 	return allMigrations
 }
