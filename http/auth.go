@@ -19,8 +19,8 @@ type contextKey string
 const contextUserKey = contextKey("user")
 const sessionUserIDKey = "userID"
 
-// getUserFromContext, which may be nil if the user is not authenticated.
-func getUserFromContext(ctx context.Context) *model.User {
+// GetUserFromContext, which may be nil if the user is not authenticated.
+func GetUserFromContext(ctx context.Context) *model.User {
 	user := ctx.Value(contextUserKey)
 	if user == nil {
 		return nil
@@ -57,7 +57,7 @@ func (s signupRequest) Validate() error {
 
 func RedirectIfAuthenticated(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		user := getUserFromContext(r.Context())
+		user := GetUserFromContext(r.Context())
 		if r.Method != http.MethodGet || user == nil {
 			h.ServeHTTP(w, r)
 			return
@@ -75,7 +75,7 @@ func Signup(r *Router, page html.PageFunc, log *snorkel.Logger, db signupper) {
 	r.Mux.Post("/signup", httph.FormHandler(func(w http.ResponseWriter, r *http.Request, req signupRequest) {
 		ghttp.Adapt(func(w http.ResponseWriter, r *http.Request) (g.Node, error) {
 			// TODO this should be middleware
-			user := getUserFromContext(r.Context())
+			user := GetUserFromContext(r.Context())
 			if user != nil {
 				http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 				return nil, nil

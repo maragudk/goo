@@ -16,13 +16,22 @@ type Router struct {
 
 func (r *Router) Get(path string, cb func(props html.PageProps) (g.Node, error)) {
 	r.Mux.Get(path, ghttp.Adapt(func(w http.ResponseWriter, r *http.Request) (g.Node, error) {
-		props := html.PageProps{
-			User: getUserFromContext(r.Context()),
-			Ctx:  r.Context(),
-			Req:  r,
-		}
-		return cb(props)
+		return cb(getProps(r))
 	}))
+}
+
+func (r *Router) Post(path string, cb func(props html.PageProps) (g.Node, error)) {
+	r.Mux.Post(path, ghttp.Adapt(func(w http.ResponseWriter, r *http.Request) (g.Node, error) {
+		return cb(getProps(r))
+	}))
+}
+
+func getProps(r *http.Request) html.PageProps {
+	return html.PageProps{
+		User: GetUserFromContext(r.Context()),
+		Ctx:  r.Context(),
+		Req:  r,
+	}
 }
 
 func (r *Router) Group(cb func(r *Router)) {
