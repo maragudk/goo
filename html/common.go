@@ -40,6 +40,13 @@ func label(id, text string) g.Node {
 	return Label(For(id), Class("block text-sm text-gray-700 mb-1"), g.Text(text))
 }
 
+func LabelAndInput(name string, children ...g.Node) g.Node {
+	return Div(
+		label(name, name),
+		input(ID(name), g.Group(children)),
+	)
+}
+
 func input(children ...g.Node) g.Node {
 	return Input(Class("block w-full rounded-md border border-gray-300 focus:border-primary-500 px-3 py-2 placeholder-gray-400 shadow-sm sm:text-sm text-gray-900 focus:ring-primary-500"), g.Group(children))
 }
