@@ -4,9 +4,9 @@ import (
 	"context"
 	"net/http"
 
-	g "github.com/maragudk/gomponents"
-	ghttp "github.com/maragudk/gomponents/http"
 	"maragu.dev/errors"
+	. "maragu.dev/gomponents"
+	ghttp "maragu.dev/gomponents/http"
 	"maragu.dev/httph"
 	"maragu.dev/snorkel"
 
@@ -68,12 +68,12 @@ func RedirectIfAuthenticated(h http.Handler) http.Handler {
 }
 
 func Signup(r *Router, page html.PageFunc, log *snorkel.Logger, db signupper) {
-	r.Get("/signup", func(props html.PageProps) (g.Node, error) {
+	r.Get("/signup", func(props html.PageProps) (Node, error) {
 		return html.SignupPage(page, model.User{}), nil
 	})
 
 	r.Mux.Post("/signup", httph.FormHandler(func(w http.ResponseWriter, r *http.Request, req signupRequest) {
-		ghttp.Adapt(func(w http.ResponseWriter, r *http.Request) (g.Node, error) {
+		ghttp.Adapt(func(w http.ResponseWriter, r *http.Request) (Node, error) {
 			// TODO this should be middleware
 			user := GetUserFromContext(r.Context())
 			if user != nil {
@@ -96,7 +96,7 @@ func Signup(r *Router, page html.PageFunc, log *snorkel.Logger, db signupper) {
 		})(w, r)
 	}))
 
-	r.Mux.Get("/signup/thanks", ghttp.Adapt(func(w http.ResponseWriter, r *http.Request) (g.Node, error) {
+	r.Mux.Get("/signup/thanks", ghttp.Adapt(func(w http.ResponseWriter, r *http.Request) (Node, error) {
 		return html.SignupThanksPage(page), nil
 	}))
 }
@@ -134,7 +134,7 @@ func (l loginTokenRequest) Validate() error {
 }
 
 func Login(r *Router, page html.PageFunc, log *snorkel.Logger, db loginner, sp sessionPutter) {
-	r.Get("/login", func(props html.PageProps) (g.Node, error) {
+	r.Get("/login", func(props html.PageProps) (Node, error) {
 		token := props.Req.URL.Query().Get("token")
 		if token != "" {
 			return html.LoginSubmitTokenPage(page, token), nil
@@ -143,7 +143,7 @@ func Login(r *Router, page html.PageFunc, log *snorkel.Logger, db loginner, sp s
 	})
 
 	r.Mux.Post("/login/email", httph.FormHandler(func(w http.ResponseWriter, r *http.Request, req tryLoginRequest) {
-		ghttp.Adapt(func(w http.ResponseWriter, r *http.Request) (g.Node, error) {
+		ghttp.Adapt(func(w http.ResponseWriter, r *http.Request) (Node, error) {
 			if err := db.TryLogin(r.Context(), req.Email); err != nil {
 				switch {
 				case errors.Is(err, model.ErrorUserInactive):
@@ -161,12 +161,12 @@ func Login(r *Router, page html.PageFunc, log *snorkel.Logger, db loginner, sp s
 		})(w, r)
 	}))
 
-	r.Get("/login/email", func(props html.PageProps) (g.Node, error) {
+	r.Get("/login/email", func(props html.PageProps) (Node, error) {
 		return html.LoginCheckEmailPage(page), nil
 	})
 
 	r.Mux.Post("/login/token", httph.FormHandler(func(w http.ResponseWriter, r *http.Request, req loginTokenRequest) {
-		ghttp.Adapt(func(w http.ResponseWriter, r *http.Request) (g.Node, error) {
+		ghttp.Adapt(func(w http.ResponseWriter, r *http.Request) (Node, error) {
 			user, err := db.Login(r.Context(), req.Token)
 			if err != nil {
 				switch {
@@ -201,7 +201,7 @@ type sessionDestroyer interface {
 // Logout creates an http.Handler for logging out.
 // It just destroys the current user session.
 func Logout(r *Router, page html.PageFunc, log *snorkel.Logger, sd sessionDestroyer) {
-	r.Mux.Post("/logout", ghttp.Adapt(func(w http.ResponseWriter, r *http.Request) (g.Node, error) {
+	r.Mux.Post("/logout", ghttp.Adapt(func(w http.ResponseWriter, r *http.Request) (Node, error) {
 		if err := sd.Destroy(r.Context()); err != nil {
 			log.Event("Error logging out", 1, "error", err)
 			return html.ErrorPage(page), err

@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
-	g "github.com/maragudk/gomponents"
-	ghttp "github.com/maragudk/gomponents/http"
+	. "maragu.dev/gomponents"
+	ghttp "maragu.dev/gomponents/http"
 
 	"maragu.dev/goo/html"
 )
@@ -14,14 +14,14 @@ type Router struct {
 	Mux chi.Router
 }
 
-func (r *Router) Get(path string, cb func(props html.PageProps) (g.Node, error)) {
-	r.Mux.Get(path, ghttp.Adapt(func(w http.ResponseWriter, r *http.Request) (g.Node, error) {
+func (r *Router) Get(path string, cb func(props html.PageProps) (Node, error)) {
+	r.Mux.Get(path, ghttp.Adapt(func(w http.ResponseWriter, r *http.Request) (Node, error) {
 		return cb(getProps(r))
 	}))
 }
 
-func (r *Router) Post(path string, cb func(props html.PageProps) (g.Node, error)) {
-	r.Mux.Post(path, ghttp.Adapt(func(w http.ResponseWriter, r *http.Request) (g.Node, error) {
+func (r *Router) Post(path string, cb func(props html.PageProps) (Node, error)) {
+	r.Mux.Post(path, ghttp.Adapt(func(w http.ResponseWriter, r *http.Request) (Node, error) {
 		return cb(getProps(r))
 	}))
 }

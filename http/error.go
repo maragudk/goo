@@ -3,8 +3,8 @@ package http
 import (
 	"net/http"
 
-	g "github.com/maragudk/gomponents"
-	ghttp "github.com/maragudk/gomponents/http"
+	. "maragu.dev/gomponents"
+	ghttp "maragu.dev/gomponents/http"
 
 	"maragu.dev/goo/html"
 )
@@ -22,7 +22,7 @@ func (n httpError) StatusCode() int {
 }
 
 func NotFound(page html.PageFunc) http.HandlerFunc {
-	return ghttp.Adapt(func(w http.ResponseWriter, r *http.Request) (g.Node, error) {
+	return ghttp.Adapt(func(w http.ResponseWriter, r *http.Request) (Node, error) {
 		return html.NotFoundPage(page), httpError{Code: http.StatusNotFound}
 	})
 }
