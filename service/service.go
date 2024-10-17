@@ -94,6 +94,7 @@ func start(opts Options) error {
 	sqlHelper.JobsQ = q
 
 	s := http.NewServer(http.NewServerOptions{
+		Address:            env.GetStringOrDefault("SERVER_ADDRESS", ":8080"),
 		AdminPassword:      env.GetStringOrDefault("ADMIN_PASSWORD", "correct horse battery staple"),
 		BaseURL:            baseURL,
 		HTTPRouterInjector: opts.HTTPRouterInjector,
