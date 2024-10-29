@@ -21,14 +21,6 @@ func (t *Time) String() string {
 	return t.T.UTC().Format(rfc3339Milli)
 }
 
-func ParseTime(v string) (Time, error) {
-	t, err := time.Parse(rfc3339Milli, v)
-	if err != nil {
-		return Time{}, err
-	}
-	return Time{T: t}, nil
-}
-
 // Value satisfies driver.Valuer interface.
 func (t Time) Value() (driver.Value, error) {
 	return t.T.UTC().Format(rfc3339Milli), nil
@@ -55,6 +47,18 @@ func (t *Time) Scan(src any) error {
 	return nil
 }
 
+func (t *Time) MarshalText() ([]byte, error) {
+	return []byte(t.String()), nil
+}
+
 func Now() *Time {
 	return &Time{T: time.Now()}
+}
+
+func ParseTime(v string) (Time, error) {
+	t, err := time.Parse(rfc3339Milli, v)
+	if err != nil {
+		return Time{}, err
+	}
+	return Time{T: t}, nil
 }
