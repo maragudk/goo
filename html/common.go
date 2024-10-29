@@ -43,7 +43,7 @@ func label(id, text string) Node {
 func LabelAndInput(name string, children ...Node) Node {
 	return Div(
 		label(name, name),
-		input(ID(name), Group(children)),
+		input(ID(name), Name(name), Group(children)),
 	)
 }
 
