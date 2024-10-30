@@ -67,6 +67,18 @@ func RedirectIfAuthenticated(h http.Handler) http.Handler {
 	})
 }
 
+func RedirectIfNotAuthenticated(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		user := GetUserFromContext(r.Context())
+		if user == nil {
+			http.Redirect(w, r, "/signup", http.StatusTemporaryRedirect)
+			return
+		}
+
+		h.ServeHTTP(w, r)
+	})
+}
+
 func Signup(r *Router, page html.PageFunc, log *snorkel.Logger, db signupper) {
 	r.Get("/signup", func(props html.PageProps) (Node, error) {
 		return html.SignupPage(page, model.User{}), nil
