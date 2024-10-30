@@ -51,7 +51,7 @@ func input(children ...Node) Node {
 	return Input(Class("block w-full rounded-md border border-gray-300 focus:border-primary-500 px-3 py-2 placeholder-gray-400 shadow-sm sm:text-sm text-gray-900 focus:ring-primary-500"), Group(children))
 }
 
-func button(children ...Node) Node {
+func ButtonPrimary(children ...Node) Node {
 	return Button(Class("block w-full rounded-md bg-primary-600 hover:bg-primary-700 px-4 py-2 font-medium text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 font-sans"), Group(children))
 }
 

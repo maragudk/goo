@@ -46,7 +46,7 @@ func SignupPage(page PageFunc, newUser model.User) Node {
 					),
 				),
 
-				button(Type("submit"), Text(`Sign up`)),
+				ButtonPrimary(Type("submit"), Text(`Sign up`)),
 			),
 		),
 	)
@@ -85,7 +85,7 @@ func LoginPage(page PageFunc, email model.Email) Node {
 					input(Type("email"), ID("email"), Name("email"), AutoComplete("email"), Placeholder("me@example.com"), Required(), AutoFocus(), Value(email.String())),
 				),
 
-				button(Type("submit"), Text(`Log in`)),
+				ButtonPrimary(Type("submit"), Text(`Log in`)),
 			),
 		),
 	)
@@ -113,7 +113,7 @@ func LoginSubmitTokenPage(page PageFunc, token string) Node {
 			Form(Action("/login/token"), Method("post"),
 				Input(Type("hidden"), Name("token"), Value(token)),
 
-				button(Type("submit"), Text(`Log in`)),
+				ButtonPrimary(Type("submit"), Text(`Log in`)),
 			),
 		),
 	)
