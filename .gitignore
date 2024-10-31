@@ -1,6 +1,7 @@
 /app.db*
 /cover.out
 /.env
+/.env.test.local
 /public/styles/app.css
 /tailwindcss
 /test.db*
