@@ -1,6 +1,9 @@
 package llm
 
 import (
+	"context"
+	"io"
+
 	"github.com/sashabaranov/go-openai"
 )
 
@@ -24,4 +27,8 @@ type Message struct {
 	Content string
 	Name    string
 	Role    MessageRole
+}
+
+type Prompter interface {
+	Prompt(ctx context.Context, system string, messages []Message, w io.Writer) error
 }

@@ -15,15 +15,17 @@ import (
 	"maragu.dev/goo/html"
 	"maragu.dev/goo/http"
 	"maragu.dev/goo/jobs"
+	"maragu.dev/goo/llm"
 	"maragu.dev/goo/sql"
 )
 
 type Options struct {
-	HTMLPage           html.PageFunc
-	HTTPRouterInjector func(*http.Router)
-	Log                *snorkel.Logger
-	Migrate            bool
-	SQLHelperInjector  func(*sql.Helper)
+	HTMLPage            html.PageFunc
+	HTTPRouterInjector  func(*http.Router)
+	LLMPrompterInjector func(llm.Prompter)
+	Log                 *snorkel.Logger
+	Migrate             bool
+	SQLHelperInjector   func(*sql.Helper)
 }
 
 func Start(opts Options) {
@@ -86,6 +88,17 @@ func start(opts Options) error {
 		TransactionalEmailName:    env.GetStringOrDefault("TRANSACTIONAL_EMAIL_NAME", "Transactional"),
 	})
 
+	llmClient := llm.NewOpenAIClient(llm.NewOpenAIClientOptions{
+		BaseURL: env.GetStringOrDefault("LLM_URL", "https://api.fireworks.ai/inference/v1"),
+		Log:     log,
+		Model:   llm.Model(env.GetStringOrDefault("LLM_MODEL", llm.ModelFireworksLlama3_1_8B.String())),
+		Token:   env.GetStringOrDefault("LLM_TOKEN", ""),
+	})
+
+	if opts.LLMPrompterInjector != nil {
+		opts.LLMPrompterInjector(llmClient)
+	}
+
 	jobs.Register(r, jobs.RegisterOpts{
 		Log:    log,
 		Sender: sender,
@@ -99,6 +112,7 @@ func start(opts Options) error {
 		BaseURL:            baseURL,
 		HTTPRouterInjector: opts.HTTPRouterInjector,
 		HTMLPage:           opts.HTMLPage,
+		LLMClient:          llmClient,
 		Log:                log,
 		SecureCookie:       env.GetBoolOrDefault("SECURE_COOKIE", true),
 		SQLHelper:          sqlHelper,

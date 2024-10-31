@@ -13,6 +13,8 @@ import (
 	"github.com/go-chi/chi/v5"
 	"maragu.dev/snorkel"
 
+	"maragu.dev/goo/llm"
+
 	"maragu.dev/goo/html"
 	"maragu.dev/goo/sql"
 )
@@ -20,11 +22,12 @@ import (
 type Server struct {
 	adminPassword      string
 	baseURL            string
+	htmlPage           html.PageFunc
+	httpRouterInjector func(*Router)
+	llmClient          *llm.OpenAIClient
 	log                *snorkel.Logger
 	r                  *Router
 	server             *http.Server
-	httpRouterInjector func(*Router)
-	htmlPage           html.PageFunc
 	sm                 *scs.SessionManager
 	sqlHelper          *sql.Helper
 }
@@ -33,8 +36,9 @@ type NewServerOptions struct {
 	Address            string
 	AdminPassword      string
 	BaseURL            string
-	HTTPRouterInjector func(*Router)
 	HTMLPage           html.PageFunc
+	HTTPRouterInjector func(*Router)
+	LLMClient          *llm.OpenAIClient
 	Log                *snorkel.Logger
 	SecureCookie       bool
 	SQLHelper          *sql.Helper
@@ -61,6 +65,7 @@ func NewServer(opts NewServerOptions) *Server {
 		baseURL:            strings.TrimSuffix(opts.BaseURL, "/"),
 		httpRouterInjector: opts.HTTPRouterInjector,
 		htmlPage:           opts.HTMLPage,
+		llmClient:          opts.LLMClient,
 		log:                opts.Log,
 		r:                  &Router{Mux: mux},
 		server: &http.Server{

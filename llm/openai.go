@@ -13,9 +13,15 @@ import (
 )
 
 const (
-	ModelLlama3_2_1B = Model("llama3.2-1b")
-	ModelLlama3_2_3B = Model("llama3.2-3b")
-	ModelGPT4o       = Model(openai.GPT4o)
+	fireworksPrefix = "accounts/fireworks/models/"
+)
+
+const (
+	ModelLlama3_2_1B            = Model("llama3.2-1b")
+	ModelLlama3_2_3B            = Model("llama3.2-3b")
+	ModelFireworksLlama3_1_405B = Model(fireworksPrefix + "llama-v3p1-405b-instruct")
+	ModelFireworksLlama3_1_8B   = Model(fireworksPrefix + "llama-v3p1-8b-instruct")
+	ModelGPT4o                  = Model(openai.GPT4o)
 )
 
 type OpenAIClient struct {
