@@ -122,3 +122,5 @@ func (t *Tx) Exec(ctx context.Context, query string, args ...any) error {
 	_, err := t.Tx.ExecContext(ctx, query, args...)
 	return err
 }
+
+var ErrNoRows = sql.ErrNoRows
