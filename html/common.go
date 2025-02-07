@@ -58,11 +58,11 @@ func LabelAndInput(name string, children ...Node) Node {
 }
 
 func input(children ...Node) Node {
-	return Input(Class("block w-full rounded-md border border-gray-300 focus:border-primary-500 px-3 py-2 placeholder-gray-400 shadow-sm sm:text-sm text-gray-900 focus:ring-primary-500"), Group(children))
+	return Input(Class("block w-full rounded-md border border-gray-300 focus:border-sky-500 px-3 py-2 placeholder-gray-400 shadow-sm sm:text-sm text-gray-900 focus:ring-sky-500"), Group(children))
 }
 
 func ButtonPrimary(children ...Node) Node {
-	return Button(Class("block w-full rounded-md bg-primary-600 hover:bg-primary-700 px-4 py-2 font-medium text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 font-sans"), Group(children))
+	return Button(Class("block w-full rounded-md bg-sky-600 hover:bg-sky-700 px-4 py-2 font-medium text-white focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 font-sans"), Group(children))
 }
 
 func h1(children ...Node) Node {
@@ -74,7 +74,7 @@ func p(class string, children ...Node) Node {
 }
 
 func a(children ...Node) Node {
-	return A(Class("text-primary-600 hover:text-primary-500"), Group(children))
+	return A(Class("text-sky-600 hover:text-sky-500"), Group(children))
 }
 
 func alertBox(children ...Node) Node {
