@@ -58,7 +58,7 @@ func LabelAndInput(name string, children ...Node) Node {
 }
 
 func input(children ...Node) Node {
-	return Input(Class("block w-full rounded-md border border-gray-300 focus:border-sky-500 px-3 py-2 placeholder-gray-400 shadow-sm sm:text-sm text-gray-900 focus:ring-sky-500"), Group(children))
+	return Input(Class("bg-white block w-full rounded-md border border-gray-300 focus:border-sky-500 px-3 py-2 placeholder-gray-400 shadow-sm sm:text-sm text-gray-900 focus:ring-sky-500"), Group(children))
 }
 
 func ButtonPrimary(children ...Node) Node {
