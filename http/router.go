@@ -40,6 +40,12 @@ func (r *Router) Group(cb func(r *Router)) {
 	})
 }
 
+func (r *Router) Route(pattern string, cb func(r *Router)) {
+	r.Mux.Route(pattern, func(mux chi.Router) {
+		cb(&Router{Mux: mux})
+	})
+}
+
 func (r *Router) Use(middleware func(http.Handler) http.Handler) {
 	r.Mux.Use(middleware)
 }
