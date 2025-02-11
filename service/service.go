@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"os"
 	"os/signal"
 	"syscall"
 
@@ -40,6 +41,7 @@ func Start(opts Options) {
 
 	if err := start(opts); err != nil {
 		log.Event("Error starting", 1, "error", err)
+		os.Exit(1)
 	}
 }
 
