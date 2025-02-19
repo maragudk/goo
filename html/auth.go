@@ -36,7 +36,7 @@ func SignupPage(page PageFunc, newUser model.User) Node {
 
 				Div(Class("flex items-center space-x-2"),
 					Input(ID("accept"), Name("accept"), Type("checkbox"), Value("true"), Required(),
-						Class("h-4 w-4 rounded border-gray-300 text-sky-600 focus:ring-sky-500")),
+						Class("h-4 w-4 rounded-sm border-gray-300 text-sky-600 focus:ring-sky-500")),
 					Label(For("accept"), Class("text-gray-900"),
 						Text(`I accept `),
 						a(Href("https://www.maragu.dev/p/terms-of-service"), Target("_blank"), Text(`Terms of Service`)),
