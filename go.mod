@@ -6,7 +6,7 @@ require (
 	github.com/alexedwards/scs/sqlite3store v0.0.0-20240316134038-7e11d57e8885
 	github.com/alexedwards/scs/v2 v2.8.0
 	github.com/anthropics/anthropic-sdk-go v0.2.0-alpha.3
-	github.com/go-chi/chi/v5 v5.1.0
+	github.com/go-chi/chi/v5 v5.2.2
 	github.com/google/generative-ai-go v0.18.0
 	github.com/jmoiron/sqlx v1.4.0
 	github.com/maragudk/goqite v0.2.3
