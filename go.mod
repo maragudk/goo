@@ -1,6 +1,6 @@
 module maragu.dev/goo
 
-go 1.23
+go 1.24.0
 
 require (
 	github.com/alexedwards/scs/sqlite3store v0.0.0-20240316134038-7e11d57e8885
@@ -13,7 +13,7 @@ require (
 	github.com/maragudk/is v0.1.0
 	github.com/mattn/go-sqlite3 v1.14.23
 	github.com/sashabaranov/go-openai v1.32.5
-	golang.org/x/sync v0.8.0
+	golang.org/x/sync v0.18.0
 	google.golang.org/api v0.203.0
 	maragu.dev/env v0.2.0
 	maragu.dev/errors v0.3.0
@@ -51,11 +51,11 @@ require (
 	go.opentelemetry.io/otel v1.29.0 // indirect
 	go.opentelemetry.io/otel/metric v1.29.0 // indirect
 	go.opentelemetry.io/otel/trace v1.29.0 // indirect
-	golang.org/x/crypto v0.28.0 // indirect
-	golang.org/x/net v0.30.0 // indirect
+	golang.org/x/crypto v0.45.0 // indirect
+	golang.org/x/net v0.47.0 // indirect
 	golang.org/x/oauth2 v0.23.0 // indirect
-	golang.org/x/sys v0.26.0 // indirect
-	golang.org/x/text v0.19.0 // indirect
+	golang.org/x/sys v0.38.0 // indirect
+	golang.org/x/text v0.31.0 // indirect
 	golang.org/x/time v0.7.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20240903143218-8af14fe29dc1 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20241015192408-796eee8c2d53 // indirect
